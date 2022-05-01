@@ -1,0 +1,17 @@
+package com.epicblues.coffee.server.order.entities;
+
+import lombok.Getter;
+
+public class Email {
+
+  private static final String EMAIL_REGEX = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+  @Getter
+  private final String address;
+
+  public Email(String address) {
+    if (!address.matches(EMAIL_REGEX)) {
+      throw new IllegalArgumentException("이메일 형식이 아닙니다.");
+    }
+    this.address = address;
+  }
+}
