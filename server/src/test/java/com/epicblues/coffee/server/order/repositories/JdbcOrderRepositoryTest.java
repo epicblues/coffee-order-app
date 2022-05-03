@@ -1,10 +1,10 @@
 package com.epicblues.coffee.server.order.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.epicblues.coffee.server.EmbeddedDatabaseTestModule;
 import com.epicblues.coffee.server.order.OrderFixture;
+import com.epicblues.coffee.server.order.OrderFixture.ProductSetupExecutor;
 import com.epicblues.coffee.server.order.entities.Order;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -12,42 +12,44 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
-class JdbcOrderRepositoryTest extends EmbeddedDatabaseTestModule {
+class JdbcOrderRepositoryTest {
 
   private static JdbcOrderRepository repository;
 
   @BeforeAll
   static void setup() {
-    repository = new JdbcOrderRepository(new NamedParameterJdbcTemplate(getDataSource()));
+    repository = new JdbcOrderRepository(
+        new NamedParameterJdbcTemplate(EmbeddedDatabaseTestModule.getDataSource()));
   }
 
   @BeforeEach
+  @Transactional
   void insertFixtures() {
-    repository.insert(OrderFixture.orders.get(0));
+    ProductSetupExecutor.insertProducts();
+    OrderFixture.orders.forEach(repository::insert);
   }
 
   @AfterEach()
+  @Transactional
   void cleanUpOrderTable() {
     repository.removeAll();
+    ProductSetupExecutor.removeAllProducts();
   }
 
   @Test
   void findAll() {
-
     List<Order> orders = repository.findAll();
-
-    assertThat(orders).hasSize(1)
-        .contains(OrderFixture.orders.get(0));
+    assertThat(orders).hasSize(OrderFixture.orders.size())
+        .containsAll(OrderFixture.orders);
   }
 
   @Test
   void insert() {
-    var order = OrderFixture.orders.get(1);
-    assertThatNoException().isThrownBy(() -> {
-      repository.insert(order);
-    });
-
+    var order = OrderFixture.singleOrder;
+    Order queriedOrder = repository.insert(order);
+    assertThat(repository.findById(queriedOrder.getOrderId())).get().isEqualTo(queriedOrder);
   }
 
   @Test
@@ -62,9 +64,7 @@ class JdbcOrderRepositoryTest extends EmbeddedDatabaseTestModule {
 
   @Test
   void removeAll() {
-    assertThatNoException().isThrownBy(() -> {
-      repository.removeAll();
-    });
+    repository.removeAll();
     assertThat(repository.findAll()).isEmpty();
   }
 }
