@@ -34,3 +34,11 @@ CREATE TABLE order_items
     CONSTRAINT fk_order_items_to_order FOREIGN KEY (order_id) REFERENCES orders (order_id) ON DELETE CASCADE,
     CONSTRAINT fk_order_items_to_product FOREIGN KEY (product_id) REFERENCES products (product_id)
 );
+
+INSERT INTO products(product_id, product_name, category, price, created_at)
+    VALUE (UUID_TO_BIN('067badbc-e6cb-4acd-93b6-b74275f8cb8b'), 'Americano',
+           'DRINK', 10000, now());
+
+INSERT INTO products(product_id, product_name, category, price, created_at)
+    VALUE (UUID_TO_BIN('c75aae26-c527-4590-b70d-53cd28916976'), 'Vanilla Latte',
+           'DRINK', 5000, now());

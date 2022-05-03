@@ -1,5 +1,6 @@
 package com.epicblues.coffee.server.order.entities;
 
+import java.util.Objects;
 import lombok.Getter;
 
 public class Email {
@@ -14,4 +15,22 @@ public class Email {
     }
     this.address = address;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Email)) {
+      return false;
+    }
+    Email email = (Email) o;
+    return address.equals(email.address);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(address);
+  }
+
 }
