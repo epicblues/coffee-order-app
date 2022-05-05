@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class JdbcOrderRepository implements OrderRepository {
 
+  private static final String UPDATED_AT_COLUMN = "updated_at";
   private final NamedParameterJdbcTemplate jdbcTemplate;
   private final RowMapper<Order> orderRowMapper = (resultSet, index) ->
       Order.Builder.create()
@@ -42,19 +43,18 @@ public class JdbcOrderRepository implements OrderRepository {
           .postcode(resultSet.getString("postcode"))
           .orderStatus(OrderStatus.valueOf(resultSet.getString("order_status")))
           .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
-          .updatedAt(resultSet.getTimestamp("updated_at") == null ? null
-              : resultSet.getTimestamp("updated_at").toLocalDateTime())
+          .updatedAt(resultSet.getTimestamp(UPDATED_AT_COLUMN) == null ? null
+              : resultSet.getTimestamp(UPDATED_AT_COLUMN).toLocalDateTime())
           .build();
-
-  private RowMapper<OrderItem> orderItemRowMapper = (resultSet, index) -> {
+  private final RowMapper<OrderItem> orderItemRowMapper = (resultSet, index) -> {
     UUID orderId = UUIDMapper.fromBytes(resultSet.getBytes("order_id"));
     UUID productId = UUIDMapper.fromBytes(resultSet.getBytes("product_id"));
     Category category = Category.valueOf(resultSet.getString("category"));
     var price = resultSet.getLong("price");
     var quantity = resultSet.getLong("quantity");
     var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-    var updatedAt = resultSet.getTimestamp("updated_at") == null ? null
-        : resultSet.getTimestamp("updated_at").toLocalDateTime();
+    var updatedAt = resultSet.getTimestamp(UPDATED_AT_COLUMN) == null ? null
+        : resultSet.getTimestamp(UPDATED_AT_COLUMN).toLocalDateTime();
 
     return new OrderItem(orderId, productId, category, price, quantity, createdAt, updatedAt);
 

@@ -4,6 +4,7 @@ import com.epicblues.coffee.server.order.entities.Category;
 import com.epicblues.coffee.server.product.entities.Product;
 import com.epicblues.coffee.server.util.UUIDMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Slf4j
+@Repository
 public class JdbcProductRepository implements ProductRepository {
 
   private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -60,6 +63,11 @@ public class JdbcProductRepository implements ProductRepository {
         toParamMap(product));
 
     return product;
+  }
+
+  @Override
+  public void removeAll() {
+    jdbcTemplate.update("DELETE FROM products", Collections.emptyMap());
   }
 
   private Map<String, ?> toParamMap(Product product) {
