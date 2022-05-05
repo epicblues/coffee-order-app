@@ -86,7 +86,8 @@ public class JdbcOrderRepository implements OrderRepository {
 
   private Map<String, ?> mapToParam(Order order) {
     var map = new HashMap<String, Object>();
-    map.put(ORDER_ID, order.getOrderId().toString().getBytes(StandardCharsets.UTF_8));
+    map.put(ORDER_ID,
+        order.getOrderId().toString().getBytes(StandardCharsets.UTF_8));
     map.put(EMAIL, order.getEmail().getAddress());
     map.put(ADDRESS, order.getAddress());
     map.put(POSTCODE, order.getPostcode());
@@ -98,8 +99,10 @@ public class JdbcOrderRepository implements OrderRepository {
 
   private Map<String, ?> mapToParam(OrderItem orderItem) {
     var map = new HashMap<String, Object>();
-    map.put("orderId", orderItem.getOrderId().toString().getBytes(StandardCharsets.UTF_8));
-    map.put("productId", orderItem.getProductId().toString().getBytes(StandardCharsets.UTF_8));
+    map.put("orderId",
+        orderItem.getOrderId().toString().getBytes(StandardCharsets.UTF_8));
+    map.put("productId",
+        orderItem.getProductId().toString().getBytes(StandardCharsets.UTF_8));
     map.put("category", orderItem.getCategory().toString());
     map.put("price", orderItem.getPrice());
     map.put("quantity", orderItem.getQuantity());
@@ -134,6 +137,7 @@ public class JdbcOrderRepository implements OrderRepository {
 
   @Override
   public List<Order> findAll() {
-    return jdbcTemplate.query("SELECT * FROM orders", Collections.emptyMap(), orderRowMapper);
+    return jdbcTemplate.query("SELECT * FROM orders", Collections.emptyMap(),
+        orderRowMapper);
   }
 }

@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.epicblues.coffee.server.product.ProductFixtureList;
 import com.epicblues.coffee.server.product.entities.Product;
 import com.epicblues.coffee.server.product.repositories.ProductRepository;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest
+@WebMvcTest(controllers = ProductController.class)
 class ProductControllerTest {
 
   private static final String registerUrl = "/admin/product-registration";
@@ -93,7 +94,7 @@ class ProductControllerTest {
       "Pizza Maru,DRINK, 5000dc, 잘못된 입력 예시 2",
       "Pizza Maru,COFFEEBEANPACKAGE, 50000, enum 입력 잘못된 예시 3"
   })
-  @DisplayName("입력 양식이 맞지 않으면 클라이언트 에러를 발생시켜야 한다.")
+  @DisplayName("입력 양식이 맞지 않으면 40x 응답을 반환해야 한다.")
   void post_product_failure(String productName, String category, String price, String description)
       throws Exception {
 
@@ -103,6 +104,32 @@ class ProductControllerTest {
         .param("price", price)
         .param("description", description)
     ).andExpect(status().is4xxClientError());
+
+  }
+
+  @Test
+  @DisplayName("저장된 모든 product를 json으로 응답해야 한다.")
+  void should_respond_all_products_in_json() throws Exception {
+    when(productRepository.findAll()).thenReturn(ProductFixtureList.getAll());
+
+    mockMvc.perform(get("/api/v1/products")).andExpectAll(
+        status().is2xxSuccessful(),
+        content().contentType("application/json"),
+        content().string(
+            containsString(ProductFixtureList.get(0).getProductName()))
+    );
+  }
+
+  @Test
+  @DisplayName("Product가 존재하지 않을 경우 비어 있는 리스트를 반환한다.")
+  void should_throw_error_respond_all_products_in_json() throws Exception {
+    when(productRepository.findAll()).thenReturn(Collections.emptyList());
+
+    mockMvc.perform(get("/api/v1/products")).andExpectAll(
+        status().is2xxSuccessful(),
+        content().contentType("application/json"),
+        content().string("[]")
+    );
 
   }
 }

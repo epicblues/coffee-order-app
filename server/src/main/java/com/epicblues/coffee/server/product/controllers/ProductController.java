@@ -1,11 +1,14 @@
 package com.epicblues.coffee.server.product.controllers;
 
+import com.epicblues.coffee.server.product.entities.Product;
 import com.epicblues.coffee.server.product.repositories.ProductRepository;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ProductController {
@@ -29,8 +32,16 @@ public class ProductController {
   }
 
   @PostMapping("/admin/product-registration")
-  public String createProductAndRedirectToMainPage(@ModelAttribute ProductRegistrationDto dto) {
+  public String createProductAndRedirectToMainPage(
+      @ModelAttribute ProductRegistrationDto dto) {
     repository.save(dto.toProduct());
     return "redirect:/admin/products";
   }
+
+  @ResponseBody
+  @GetMapping("/api/v1/products")
+  public List<Product> getAllProducts() {
+    return repository.findAll();
+  }
+
 }

@@ -17,6 +17,7 @@ public class Order {
   private String address;
   private String postcode;
   private LocalDateTime updatedAt = null;
+
   public Order(UUID orderId, Email email, String address, String postcode, OrderStatus orderStatus,
       LocalDateTime createdAt, List<OrderItem> orderItems, LocalDateTime updatedAt) {
     this.orderId = orderId;
@@ -28,6 +29,7 @@ public class Order {
     this.orderItems = orderItems;
     this.updatedAt = updatedAt;
   }
+
   public Order(UUID orderId, Email email, String address, String postcode,
       List<OrderItem> orderItems) {
     this.orderId = orderId;
