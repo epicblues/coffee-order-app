@@ -10,41 +10,36 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
         rel="stylesheet">
 
-  <title>충혈 커피 관리자 페이지</title>
+  <title>충혈 커피</title>
 </head>
 <body class="container-fluid">
 <h1>충혈 커피</h1>
+<h2>Register Product</h2>
+<form method="post" th:action="@{/admin/product-registration}">
+  <div class="mb-3">
+    <label class="form-label" for="productName">Name</label>
+    <input class="form-control" id="productName" name="productName" type="text">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="category">Category</label>
+    <select class="form-select" id="category" name="category">
+      <option selected>Open this select menu</option>
+      <option value="COFFEE_BEAN_PACKAGE">COFFEE BEAN PACKAGE</option>
+      <option value="DRINK">DRINK</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="price">Price</label>
+    <input class="form-control" id="price" name="price" type="number">
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea class="form-control" id="description" name="description"
+              rows="3"></textarea>
+  </div>
+  <button class="btn btn-primary" type="submit">Submit</button>
+</form>
 
-<h2>관리자 페이지</h2>
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-  <a class="btn btn-primary me-md-2" th:href="@{/admin/product-registration}"
-     type="button">제품 추가</a>
-</div>
-
-<table class="table table-hover table-striped">
-  <thead>
-  <tr>
-    <th scope="col">Id</th>
-    <th scope="col">Name</th>
-    <th scope="col">Category</th>
-    <th scope="col">Price</th>
-    <th scope="col">Description</th>
-    <th scope="col">CreatedAt</th>
-    <th scope="col">UpdatedAt</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="product: ${products}" th:object="${product}">
-    <td th:text="*{productId}"></td>
-    <td th:text="*{productName}"></td>
-    <td th:text="*{category}"></td>
-    <td th:text="*{price}"></td>
-    <td th:text="*{description}"></td>
-    <td th:text="*{createdAt}"></td>
-    <td th:text="*{updatedAt}"></td>
-  </tr>
-  </tbody>
-</table>
 <script crossorigin="anonymous"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
