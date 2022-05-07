@@ -13,13 +13,12 @@ public class OrderRequestDto {
   private final String email;
   private final String address;
   private final String postcode;
-  private final List<OrderItemRequestDto> orderItemRequestDtoList;
+  private final List<OrderItemRequestDto> orderItems;
 
   public Order convert() {
     var newOrderId = UUID.randomUUID();
     return new Order(newOrderId, new Email(email), address, postcode,
-        orderItemRequestDtoList.stream().map(orderItemDto -> orderItemDto.convert(newOrderId))
-            .collect(
-                Collectors.toList()));
+        orderItems.stream().map(orderItemDto -> orderItemDto.convert(newOrderId))
+            .collect(Collectors.toList()));
   }
 }

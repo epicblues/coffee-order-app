@@ -15,6 +15,6 @@ public class DefaultOrderService implements OrderService {
 
   @Override
   public Order create(Order order) {
-    return null;
+    return orderRepository.insert(order);
   }
 }

@@ -1,23 +1,42 @@
 package com.epicblues.coffee.server.order.controllers;
 
-import com.epicblues.coffee.server.order.OrderFixture;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.epicblues.coffee.server.order.entities.Order;
 import com.epicblues.coffee.server.order.services.OrderService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {RestOrderController.class})
 class RestOrderControllerTest {
 
-  private static ObjectMapper objectMapper;
   private final ArgumentCaptor<Order> orderArgumentCaptor = ArgumentCaptor.forClass(Order.class);
+  private final String orderJson = "{\n"
+      + "  \"email\": \"epicblue@hanmail.net\",\n"
+      + "  \"address\": \"답십리동\",\n"
+      + "  \"postcode\": \"12345\",\n"
+      + "  \"orderItems\": [\n"
+      + "    {\n"
+      + "      \"productId\": \"8e9cdd65-0824-4283-80cf-4c8e2f03a800\",\n"
+      + "      \"category\": \"DRINK\",\n"
+      + "      \"price\": 10000,\n"
+      + "      \"quantity\": 3\n"
+      + "    }\n"
+      + "  ]\n"
+      + "}\n";
   @Autowired
   private MockMvc mockMvc;
   @MockBean
@@ -31,22 +50,21 @@ class RestOrderControllerTest {
 
   @Test
   @DisplayName("order를 post하는 요청이 들어오면 dto에 맞는 order를 생성하고 service에 호출해야 한다.")
-  void createOrderTest() {
-    var orderToTest = OrderFixture.singleOrder;
-//    verify(orderService, calls(1)).create(orderArgumentCaptor.capture());
+  void createOrderTest() throws Exception {
 
-    var orderItemDtos = orderToTest.getOrderItems().stream().map(orderItem ->
-        new OrderItemRequestDto(orderItem.getProductId(), orderItem.getCategory(),
-            orderItem.getPrice(),
-            orderItem.getQuantity())
-    ).collect(Collectors.toList());
-    OrderRequestDto orderRequestDto = new OrderRequestDto(orderToTest.getEmail().toString(),
-        orderToTest.getAddress(),
-        orderToTest.getPostcode(), orderItemDtos);
+    mockMvc.perform(
+            post("/api/v1/orders").contentType(MediaType.APPLICATION_JSON).content(orderJson))
+        .andDo(print()).andExpect(status().is2xxSuccessful())
+        .andExpect(content().contentType("application/json"))
+        .andExpect(jsonPath("$.id").exists());
 
+    verify(orderService, times(1)).create(orderArgumentCaptor.capture());
     var order = orderArgumentCaptor.getValue();
-//    assertThat(order).isEqualTo(orderDto.convert());
 
+    assertThat(order.getEmail().getAddress()).isEqualTo("epicblue@hanmail.net");
+    assertThat(order.getOrderItems().get(0).getProductId())
+        .hasToString("8e9cdd65-0824-4283-80cf-4c8e2f03a800");
+    assertThat(order.getPostcode()).isEqualTo("12345");
   }
 
 }
