@@ -16,7 +16,7 @@ public class RestOrderController {
   }
 
   @PostMapping("/api/v1/orders")
-  public Map<String, Object> createOrder(@RequestBody OrderRequestDto orderDto) {
+  public Map<String, Object> createOrder(@RequestBody OrderRequest orderDto) {
     var order = orderDto.convert();
 
     orderService.create(order);

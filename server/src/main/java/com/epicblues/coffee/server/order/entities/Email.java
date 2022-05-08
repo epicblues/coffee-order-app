@@ -17,6 +17,11 @@ public class Email {
   }
 
   @Override
+  public String toString() {
+    return this.address;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

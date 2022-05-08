@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class OrderRequestDto {
+public class OrderRequest {
 
   private final String email;
   private final String address;
   private final String postcode;
-  private final List<OrderItemRequestDto> orderItems;
+  private final List<OrderItemRequest> orderItems;
 
   public Order convert() {
     var newOrderId = UUID.randomUUID();
